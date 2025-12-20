@@ -37,8 +37,11 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 9. Expose port 80 (Railway expects the app to listen on the port defined by $PORT, 
-# but Apache defaults to 80 which Railway automatically detects)
+# FIX: Disable conflicting MPMs and ensure prefork is enabled
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork
+
+# 9. Expose port 80
 EXPOSE 80
 
 # 10. Start Apache
