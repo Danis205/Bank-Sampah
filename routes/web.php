@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\WithdrawalAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/about', fn () => view('about'))->name('about');
 
 /* ================= AUTH ================= */
 Route::middleware('guest')->group(function () {

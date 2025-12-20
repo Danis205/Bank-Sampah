@@ -68,6 +68,10 @@
                     </a>
                 @endif
 
+                    <a href="{{ route('about') }}"
+                    class="text-white hover:text-green-200 px-3 py-2 text-sm font-medium">
+                        <i class="fas fa-users mr-1"></i> Tentang Kami
+
                 <!-- USER DROPDOWN (FINAL, SATU, WARAS) -->
                 <div class="relative group">
                     <button
