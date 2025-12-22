@@ -93,8 +93,8 @@ class TransactionController extends Controller
             ]);
 
             $transaction->user->update([
-                'balance' => $transaction->user->balance + $transaction->total_price,
-                'points'  => $transaction->user->points + $points,
+                'saldo' => $transaction->user->saldo + $transaction->total_price,
+                'total_points' => $transaction->user->total_points + $points,
             ]);
         });
 
