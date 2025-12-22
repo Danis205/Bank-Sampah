@@ -1,8 +1,7 @@
 # Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# 1. Install packages AND fix Apache in the same step
-# (Merging them ensures Docker cannot skip the fix)
+# 1. Install development packages
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -13,18 +12,13 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpq-dev \
     libzip-dev \
- && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip \
- && a2enmod rewrite \
- # --- THE FIX IS HERE ---
- && rm -f /etc/apache2/mods-enabled/mpm_event.load \
- && rm -f /etc/apache2/mods-enabled/mpm_event.conf \
- && rm -f /etc/apache2/mods-enabled/mpm_worker.load \
- && rm -f /etc/apache2/mods-enabled/mpm_worker.conf \
- && a2enmod mpm_prefork
+ && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
-# 2. Set working directory
+# 2. Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# 3. Set the working directory
 WORKDIR /var/www/html
-
 
 # 4. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -35,24 +29,18 @@ COPY . .
 # 6. Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# 7. Set permissions for Laravel storage and cache
+# 7. Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 8. Configure Apache DocumentRoot to point to /public
+# 8. Configure Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# FIX: Disable conflicting MPMs and ensure prefork is enabled
-RUN a2dismod mpm_event mpm_worker || true \
-    && a2enmod mpm_prefork
-
 # 9. Expose port 80
 EXPOSE 80
 
-# 10. Start Apache
-CMD ["apache2-foreground"]
-
+# 10. Start using the entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
