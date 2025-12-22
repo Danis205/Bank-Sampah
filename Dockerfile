@@ -1,7 +1,8 @@
 # Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# 1. Install development packages and clean up apt cache
+# 1. Install packages AND fix Apache in the same step
+# (Merging them ensures Docker cannot skip the fix)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -12,22 +13,18 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpq-dev \
     libzip-dev \
- && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
+ && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip \
+ && a2enmod rewrite \
+ # --- THE FIX IS HERE ---
+ && rm -f /etc/apache2/mods-enabled/mpm_event.load \
+ && rm -f /etc/apache2/mods-enabled/mpm_event.conf \
+ && rm -f /etc/apache2/mods-enabled/mpm_worker.load \
+ && rm -f /etc/apache2/mods-enabled/mpm_worker.conf \
+ && a2enmod mpm_prefork
 
-
-# --- START OF FIX ---
-# Forcefully remove conflicting MPM configuration files
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_event.conf \
-    && rm -f /etc/apache2/mods-enabled/mpm_worker.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_worker.conf \
-    && a2enmod mpm_prefork
-# --- END OF FIX ---
-# 2. Enable Apache mod_rewrite for Laravel
-RUN a2enmod rewrite
-
-# 3. Set the working directory
+# 2. Set working directory
 WORKDIR /var/www/html
+
 
 # 4. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
