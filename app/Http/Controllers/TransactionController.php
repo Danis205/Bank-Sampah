@@ -42,11 +42,12 @@ class TransactionController extends Controller
 
         Transaction::create([
             'user_id' => Auth::id(),
-            'category_id' => $category->id,
+            'waste_category_id' => $category->id,
             'weight' => $request->weight,
+            'price_per_kg' => $category->price_per_kg,
             'total_price' => $total,
             'status' => 'pending',
-            'code' => 'TRX-' . now()->format('YmdHis') . '-' . rand(100,999),
+            'transaction_code' => 'TRX-' . now()->format('YmdHis') . '-' . rand(100,999),
         ]);
 
         return redirect()->route('user.transactions.index')
