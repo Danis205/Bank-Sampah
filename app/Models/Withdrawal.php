@@ -11,7 +11,7 @@ class Withdrawal extends Model
 
     protected $fillable = [
         'user_id',
-        'withdrawal_code',
+        // 'withdrawal_code', // Removed - column doesn't exist
         'amount',
         'status',
         'notes',
@@ -34,13 +34,7 @@ class Withdrawal extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public static function generateCode()
-    {
-        $prefix = 'WD';
-        $date = date('Ymd');
-        $random = strtoupper(substr(md5(uniqid()), 0, 6));
-        return $prefix . $date . $random;
-    }
+    // Removed generateCode() method since we're not using codes
 
     public function approve($adminId)
     {

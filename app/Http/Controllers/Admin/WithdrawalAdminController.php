@@ -25,10 +25,17 @@ class WithdrawalAdminController extends Controller
 
     public function approve(Withdrawal $withdrawal)
     {
+        if ($withdrawal->status !== 'pending') {
+            return redirect()
+                ->route('withdrawals.admin.index')
+                ->with('error', 'Penarikan sudah diproses');
+        }
+
         DB::transaction(function () use ($withdrawal) {
             $withdrawal->update(['status' => 'approved']);
 
-            $withdrawal->user->decrement('balance', $withdrawal->amount);
+            // Deduct saldo when approved
+            $withdrawal->user->decrement('saldo', $withdrawal->amount);
         });
 
         return redirect()

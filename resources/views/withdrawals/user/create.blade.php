@@ -36,7 +36,7 @@
             </label>
             <input type="text"
                    class="w-full border rounded px-3 py-2 bg-gray-100"
-                   value="Rp {{ number_format(auth()->user()->balance, 0, ',', '.') }}"
+                   value="Rp {{ number_format(auth()->user()->saldo, 0, ',', '.') }}"
                    disabled>
         </div>
 
@@ -69,3 +69,4 @@
     </form>
 </div>
 @endsection
+

@@ -48,33 +48,15 @@ class WithdrawalController extends Controller
         }
 
         // =========================
-        // GENERATE KODE WITHDRAWAL
-        // =========================
-        $today = now()->format('Ymd');
-
-        $lastWithdrawal = \App\Models\Withdrawal::whereDate('created_at', now()->toDateString())
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $number = $lastWithdrawal
-            ? str_pad(((int) substr($lastWithdrawal->withdrawal_code, -4)) + 1, 4, '0', STR_PAD_LEFT)
-            : '0001';
-
-        $withdrawalCode = 'WD-' . $today . '-' . $number;
-
-        // =========================
-        // SIMPAN
+        // SIMPAN (WITHOUT CODE)
         // =========================
         \App\Models\Withdrawal::create([
-            'withdrawal_code' => $withdrawalCode,
             'user_id' => $user->id,
             'amount' => $request->amount,
             'status' => 'pending',
         ]);
 
-        // potong saldo
-        $user->saldo -= $request->amount;
-        $user->save();
+        // Saldo will be deducted when admin approves
 
         return redirect()
             ->route('withdrawals.user.index')
@@ -91,10 +73,16 @@ class WithdrawalController extends Controller
 
     public function approve(Withdrawal $withdrawal)
     {
-        $withdrawal->update(['status'=>'approved']);
-        $withdrawal->user->decrement('balance', $withdrawal->amount);
+        if ($withdrawal->status !== 'pending') {
+            return back()->with('error', 'Withdrawal sudah diproses.');
+        }
 
-        return back()->with('success','Withdraw disetujui');
+        $withdrawal->update(['status' => 'approved']);
+        
+        // Deduct saldo when approved
+        $withdrawal->user->decrement('saldo', $withdrawal->amount);
+
+        return back()->with('success', 'Withdraw disetujui');
     }
 
     public function reject(Withdrawal $withdrawal)

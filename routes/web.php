@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    /* ========= USER TRANSACTIONS (INI YANG PENTING) ========= */
+    /* ========= USER TRANSACTIONS ========= */
     Route::get('/my-transactions', [TransactionController::class, 'userIndex'])
         ->name('user.transactions.index');
 
@@ -39,55 +39,52 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-transactions', [TransactionController::class, 'userStore'])
         ->name('user.transactions.store');
 
-    /* ================= ADMIN ================= */
+    /* ========= USER WITHDRAWALS ========= */
+    Route::get('/my-withdrawals', [WithdrawalController::class, 'index'])
+        ->name('withdrawals.user.index');
+    
+    Route::get('/my-withdrawals/create', [WithdrawalController::class, 'create'])
+        ->name('withdrawals.user.create');
+    
+    Route::post('/my-withdrawals', [WithdrawalController::class, 'store'])
+        ->name('withdrawals.user.store');
+    
+    Route::get('/my-withdrawals/{id}', [WithdrawalController::class, 'show'])
+        ->name('withdrawals.user.show');
+
+    /* ========= POINTS REDEMPTION ========= */
+    Route::post('/points/redeem', [PointController::class, 'redeem'])
+        ->name('points.redeem');
+
+    /* ================= ADMIN ROUTES ================= */
     Route::middleware('admin')->group(function () {
 
+        // Transactions
         Route::resource('transactions', TransactionController::class);
         Route::post('/transactions/{transaction}/approve', [TransactionController::class, 'approve'])
             ->name('transactions.approve');
         Route::post('/transactions/{transaction}/reject', [TransactionController::class, 'reject'])
             ->name('transactions.reject');
 
+        // Withdrawals (Admin)
+        Route::get('/admin/withdrawals', [WithdrawalAdminController::class, 'index'])
+            ->name('withdrawals.admin.index');
+
+        Route::get('/admin/withdrawals/{withdrawal}', [WithdrawalAdminController::class, 'show'])
+            ->name('withdrawals.admin.show');
+
+        Route::post('/admin/withdrawals/{withdrawal}/approve', [WithdrawalAdminController::class, 'approve'])
+            ->name('withdrawals.admin.approve');
+
+        Route::post('/admin/withdrawals/{withdrawal}/reject', [WithdrawalAdminController::class, 'reject'])
+            ->name('withdrawals.admin.reject');
+
+        // Categories and Users
         Route::resource('categories', WasteCategoryController::class);
         Route::resource('users', UserController::class);
 
+        // Reports
         Route::get('/reports/admin', [ReportController::class, 'adminReport'])
             ->name('reports.admin');
     });
-    // USER
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/withdrawals', [WithdrawalController::class,'index'])->name('withdrawals.user.index');
-        Route::get('/withdrawals/create', [WithdrawalController::class,'create'])->name('withdrawals.user.create');
-        Route::post('/withdrawals', [WithdrawalController::class,'store'])->name('withdrawals.user.store');
-    });
-
-    Route::get('/withdrawals/{id}', [WithdrawalController::class, 'show'])
-    ->name('withdrawals.user.show')
-    ->middleware('auth');
-
-    // ADMIN
-    Route::middleware(['auth','admin'])->group(function () {
-        Route::get('/withdrawals', [WithdrawalAdminController::class, 'index'])
-        ->name('withdrawals.admin.index');
-
-        Route::get('/withdrawals/{withdrawal}', [WithdrawalAdminController::class, 'show'])
-            ->name('withdrawals.admin.show');
-
-        Route::post('/withdrawals/{withdrawal}/approve', [WithdrawalAdminController::class, 'approve'])
-            ->name('withdrawals.admin.approve');
-
-        Route::post('/withdrawals/{withdrawal}/reject', [WithdrawalAdminController::class, 'reject'])
-            ->name('withdrawals.admin.reject');
-    });
-
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/redeem', [RedeemController::class, 'index'])->name('redeem.index');
-        Route::post('/redeem/{id}', [RedeemController::class, 'store'])->name('redeem.store');
-    });
-
-    Route::middleware(['auth'])->group(function () {
-        Route::post('/points/redeem', [PointController::class, 'redeem'])
-            ->name('points.redeem');
-    });
-
 });
