@@ -16,7 +16,7 @@ a2enmod mpm_prefork || true
 
 # Run migrations
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate:fresh --seed --force
 
 # Start Apache
 echo "Starting Apache..."
