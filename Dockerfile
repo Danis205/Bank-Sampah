@@ -32,10 +32,9 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # 7. Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 8. Configure Apache DocumentRoot
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+# 8. Configure Apache DocumentRoot (THE FIX)
+# We overwrite the default config with our custom vhost.conf
+COPY docker/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # 9. Expose port 80
 EXPOSE 80
