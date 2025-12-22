@@ -14,6 +14,15 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
  && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
+
+# --- START OF FIX ---
+# Forcefully remove conflicting MPM configuration files
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.conf \
+    && rm -f /etc/apache2/mods-enabled/mpm_worker.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_worker.conf \
+    && a2enmod mpm_prefork
+# --- END OF FIX ---
 # 2. Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
 
