@@ -24,7 +24,7 @@
             </a>
         </div>
 
-        <!-- TOTAL POIN (UPGRADED) -->
+        <!-- TOTAL POIN (WITH REDEEM BUTTON) -->
         <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 rounded-xl shadow-md text-white relative overflow-hidden">
 
             <!-- ICON -->
@@ -41,20 +41,27 @@
                 <span class="text-xs sm:text-sm opacity-90 mb-1">poin</span>
             </div>
 
+            <!-- REDEEM FORM -->
             <form action="{{ route('points.redeem') }}" method="POST">
                 @csrf
                 <button
                     type="submit"
                     class="w-full bg-white text-orange-600 font-semibold py-2 rounded-lg hover:bg-orange-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-                    {{ $points < 10 ? 'disabled' : '' }}
+                    {{ $points < 100 ? 'disabled' : '' }}
+                    onclick="return confirm('Tukar 100 poin menjadi Rp 10.000?')"
                 >
                     Redeem Poin
                 </button>
             </form>
 
-            @if($points < 10)
+            <!-- INFO TEXT -->
+            @if($points < 100)
                 <p class="text-xs mt-2 opacity-90">
-                    Minimal 10 poin untuk redeem
+                    Minimal 100 poin untuk redeem
+                </p>
+            @else
+                <p class="text-xs mt-2 opacity-90">
+                    100 poin = Rp 10.000
                 </p>
             @endif
         </div>

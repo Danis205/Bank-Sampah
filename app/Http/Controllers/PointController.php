@@ -7,22 +7,28 @@ use Illuminate\Http\Request;
 
 class PointController extends Controller
 {
+    /**
+     * Redeem poin menjadi saldo
+     * 100 poin = Rp 10.000
+     */
     public function redeem(Request $request)
     {
         $user = Auth::user();
 
-        if ($user->points < 100) {
-            return back()->with('error', 'Poin belum cukup untuk redeem');
+        // Cek minimal poin (100 poin)
+        if ($user->total_points < 100) {
+            return back()->with('error', 'Poin tidak mencukupi! Minimal 100 poin untuk redeem.');
         }
 
-        // contoh: 100 poin = Rp10.000
-        $redeemPoint = 100;
-        $redeemValue = 10000;
+        // Konfigurasi redeem
+        $pointsToRedeem = 100;      // Poin yang akan dikurangi
+        $saldoToAdd = 10000;        // Rp 10.000
 
-        $user->points -= $redeemPoint;
-        $user->balance += $redeemValue;
+        // Kurangi poin dan tambah saldo
+        $user->total_points -= $pointsToRedeem;
+        $user->saldo += $saldoToAdd;
         $user->save();
 
-        return back()->with('success', 'Poin berhasil ditukar menjadi saldo');
+        return back()->with('success', 'Berhasil redeem! 100 poin ditukar menjadi Rp 10.000');
     }
 }
