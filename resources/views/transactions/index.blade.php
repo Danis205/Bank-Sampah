@@ -5,11 +5,6 @@
     <h1 class="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Daftar Transaksi</h1>
     <p class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Kelola transaksi sampah dan penarikan saldo</p>
 
-    @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-sm" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>
-    </div>
-    @endif
 
     <!-- TABS -->
     <div class="mb-4 sm:mb-6">
