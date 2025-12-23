@@ -19,6 +19,17 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        
+        /* Smooth transitions for mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.active {
+            max-height: 500px;
+        }
     </style>
 </head>
 
@@ -31,12 +42,13 @@
 
             <!-- Logo -->
             <a href="{{ route('dashboard') }}" class="flex items-center">
-                <i class="fas fa-recycle text-white text-2xl mr-2"></i>
-                <span class="text-white text-xl font-bold">Bank Sampah</span>
+                <i class="fas fa-recycle text-white text-xl sm:text-2xl mr-2"></i>
+                <span class="text-white text-lg sm:text-xl font-bold">Bank Sampah</span>
             </a>
 
             @auth
-            <div class="flex items-center gap-4">
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center gap-4">
 
                 <a href="{{ route('dashboard') }}"
                 class="text-white hover:text-green-200 px-3 py-2 text-sm font-medium">
@@ -73,8 +85,9 @@
                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill mr-2" viewBox="0 0 16 16">
   <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
 </svg><span>About Us</span>
+</a>
 
-                <!-- USER DROPDOWN (FINAL, SATU, WARAS) -->
+                <!-- USER DROPDOWN (DESKTOP) -->
                 <div class="relative group">
                     <button
                         class="flex items-center gap-2 px-4 py-2 rounded-lg
@@ -116,27 +129,86 @@
                 </div>
             </div>
 
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="lg:hidden text-white p-2">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+
             @else
+            <!-- Guest Links -->
             <div class="flex items-center gap-3">
                 <a href="{{ route('login') }}"
-                   class="text-white hover:text-green-200 px-4 py-2 text-sm font-medium">
+                   class="text-white hover:text-green-200 px-3 sm:px-4 py-2 text-sm font-medium">
                     Login
                 </a>
 
                 <a href="{{ route('register') }}"
-                   class="bg-white text-green-600 hover:bg-green-50 px-4 py-2 rounded-md text-sm font-medium">
+                   class="bg-white text-green-600 hover:bg-green-50 px-3 sm:px-4 py-2 rounded-md text-sm font-medium">
                     Daftar
                 </a>
             </div>
             @endauth
         </div>
+
+        @auth
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu lg:hidden bg-green-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                
+                <!-- User Info -->
+                <div class="px-3 py-2 border-b border-green-600 mb-2">
+                    <p class="text-white font-semibold">{{ auth()->user()->name }}</p>
+                    <p class="text-green-200 text-xs">{{ auth()->user()->email }}</p>
+                </div>
+
+                <a href="{{ route('dashboard') }}"
+                   class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                    <i class="fas fa-home mr-2"></i> Dashboard
+                </a>
+
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('transactions.index') }}"
+                       class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-exchange-alt mr-2"></i> Transactions
+                    </a>
+
+                    <a href="{{ route('categories.index') }}"
+                       class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-tags mr-2"></i> Category
+                    </a>
+
+                    <a href="{{ route('users.index') }}"
+                       class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-users mr-2"></i> Manage User
+                    </a>
+                @else
+                    <a href="{{ route('user.transactions.index') }}"
+                       class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-trash mr-2"></i> My Transactions
+                    </a>
+                @endif
+
+                <a href="{{ route('about') }}"
+                   class="block text-white hover:bg-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                    <i class="fas fa-info-circle mr-2"></i> About Us
+                </a>
+
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                    @csrf
+                    <button class="w-full text-left text-white hover:bg-red-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endauth
     </div>
 </nav>
 
 <!-- ALERT -->
 @if(session('success'))
 <div class="max-w-7xl mx-auto px-4 mt-4">
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-sm">
         {{ session('success') }}
     </div>
 </div>
@@ -144,23 +216,47 @@
 
 @if(session('error'))
 <div class="max-w-7xl mx-auto px-4 mt-4">
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
         {{ session('error') }}
     </div>
 </div>
 @endif
 
 <!-- CONTENT -->
-<main class="max-w-7xl mx-auto px-4 py-8">
+<main class="max-w-7xl mx-auto px-4 py-4 sm:py-8">
     @yield('content')
 </main>
 
 <!-- FOOTER -->
 <footer class="bg-white border-t mt-12">
-    <div class="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600 text-sm">
         &copy; 2025 Bank Sampah. Kelola Sampah, Raih Manfaat.
     </div>
 </footer>
+
+<!-- Mobile Menu Toggle Script -->
+<script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            
+            // Toggle icon
+            const icon = mobileMenuButton.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
+</script>
+
+@stack('scripts')
 
 </body>
 </html>

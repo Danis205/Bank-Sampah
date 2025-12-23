@@ -31,16 +31,32 @@ class WithdrawalAdminController extends Controller
                 ->with('error', 'Penarikan sudah diproses');
         }
 
-        DB::transaction(function () use ($withdrawal) {
-            $withdrawal->update(['status' => 'approved']);
+        try {
+            DB::transaction(function () use ($withdrawal) {
+                // Lock the user row to prevent race conditions
+                $user = $withdrawal->user()->lockForUpdate()->first();
+                
+                // Check if user has sufficient balance
+                if ($user->saldo < $withdrawal->amount) {
+                    throw new \Exception('Saldo pengguna tidak mencukupi untuk penarikan ini');
+                }
+                
+                // Deduct saldo
+                $user->decrement('saldo', $withdrawal->amount);
+                
+                // Update withdrawal status (only status field)
+                $withdrawal->update(['status' => 'approved']);
+            });
 
-            // Deduct saldo when approved
-            $withdrawal->user->decrement('saldo', $withdrawal->amount);
-        });
-
-        return redirect()
-            ->route('withdrawals.admin.index')
-            ->with('success', 'Penarikan disetujui');
+            return redirect()
+                ->route('withdrawals.admin.index')
+                ->with('success', 'Penarikan disetujui');
+                
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('withdrawals.admin.index')
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function reject(Withdrawal $withdrawal)

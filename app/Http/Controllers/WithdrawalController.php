@@ -6,6 +6,7 @@ use App\Models\Withdrawal;
 use App\Models\WasteCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class WithdrawalController extends Controller
 {
@@ -77,12 +78,28 @@ class WithdrawalController extends Controller
             return back()->with('error', 'Withdrawal sudah diproses.');
         }
 
-        $withdrawal->update(['status' => 'approved']);
-        
-        // Deduct saldo when approved
-        $withdrawal->user->decrement('saldo', $withdrawal->amount);
+        try {
+            DB::transaction(function () use ($withdrawal) {
+                // Lock the user row to prevent race conditions
+                $user = $withdrawal->user()->lockForUpdate()->first();
+                
+                // Check if user has sufficient balance
+                if ($user->saldo < $withdrawal->amount) {
+                    throw new \Exception('Saldo pengguna tidak mencukupi untuk penarikan ini');
+                }
+                
+                // Deduct saldo
+                $user->decrement('saldo', $withdrawal->amount);
+                
+                // Update withdrawal status (only status field)
+                $withdrawal->update(['status' => 'approved']);
+            });
 
-        return back()->with('success', 'Withdraw disetujui');
+            return back()->with('success', 'Withdraw disetujui');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function reject(Withdrawal $withdrawal)

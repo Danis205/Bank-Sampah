@@ -63,7 +63,11 @@ class TransactionController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('transactions.index', compact('transactions'));
+        $withdrawals = \App\Models\Withdrawal::with('user')
+            ->latest()
+            ->paginate(10);
+
+        return view('transactions.index', compact('transactions', 'withdrawals'));
     }
 
     public function show(Transaction $transaction)
@@ -94,7 +98,7 @@ class TransactionController extends Controller
 
             $transaction->user->update([
                 'saldo' => $transaction->user->saldo + $transaction->total_price,
-                'total_points' => $transaction->user->total_points + $points,
+                'total_points'  => $transaction->user->total_points + $points,
             ]);
         });
 
