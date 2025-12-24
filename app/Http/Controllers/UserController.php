@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -36,7 +37,6 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'password' => 'required|min:6|confirmed',
-            'role' => 'required|in:admin,user',
         ], [
             'name.required' => 'Nama wajib diisi',
             'email.required' => 'Email wajib diisi',
@@ -44,7 +44,6 @@ class UserController extends Controller
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
-            'role.required' => 'Role wajib dipilih',
         ]);
 
         User::create([
@@ -53,7 +52,7 @@ class UserController extends Controller
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
+            'role' => 'user', // Always set new users to 'user' role
             'saldo' => 0,
             'total_points' => 0,
         ]);
@@ -69,6 +68,7 @@ class UserController extends Controller
     {
         // Ambil 10 transaksi terbaru user ini
         $transactions = $user->transactions()
+                            ->with('wasteCategory')
                             ->latest()
                             ->take(10)
                             ->get();
@@ -79,13 +79,14 @@ class UserController extends Controller
         $totalRevenue = $user->transactions()->where('status', 'approved')->sum('total_price');
 
         return view('users.show', compact(
-            'user', 
-            'transactions',  // <-- penting biar blade bisa loop
-            'totalTransactions', 
-            'totalWaste', 
+            'user',
+            'transactions',
+            'totalTransactions',
+            'totalWaste',
             'totalRevenue'
         ));
     }
+
     /**
      * Show the form for editing the specified user
      */
@@ -106,6 +107,13 @@ class UserController extends Controller
             'address' => 'nullable|string',
             'role' => 'required|in:admin,user',
             'password' => 'nullable|min:6|confirmed',
+        ], [
+            'name.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.min' => 'Password minimal 6 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            'role.required' => 'Role wajib dipilih',
         ]);
 
         $data = [
@@ -132,7 +140,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Prevent deleting own account
+        // Prevent deleting admin accounts
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Tidak dapat menghapus akun Admin. Admin diperlukan untuk mengelola sistem.');
+        }
+
+        // Prevent deleting own account (optional additional protection)
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
@@ -143,12 +156,4 @@ class UserController extends Controller
             ->with('success', 'User berhasil dihapus.');
     }
 
-    public function userIndex()
-    {
-        $transactions = Transaction::where('user_id', auth()->id())
-            ->latest()
-            ->get();
-
-        return view('transactions.user-index', compact('transactions'));
-    }
 }
