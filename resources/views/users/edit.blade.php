@@ -144,7 +144,6 @@
         <ul class="list-disc list-inside space-y-1 text-xs">
             <li>Password hanya akan diubah jika Anda mengisi field password baru</li>
             <li>Mengubah email ke email yang sudah terdaftar akan ditolak</li>
-            <li>Mengubah role dapat mempengaruhi akses user ke sistem</li>
             <li>Saldo dan poin user tidak dapat diubah dari form ini</li>
         </ul>
     </div>
