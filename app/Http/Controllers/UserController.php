@@ -105,7 +105,6 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'role' => 'required|in:admin,user',
             'password' => 'nullable|min:6|confirmed',
         ], [
             'name.required' => 'Nama wajib diisi',
@@ -113,7 +112,6 @@ class UserController extends Controller
             'email.unique' => 'Email sudah terdaftar',
             'password.min' => 'Password minimal 6 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
-            'role.required' => 'Role wajib dipilih',
         ]);
 
         $data = [
@@ -121,7 +119,6 @@ class UserController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
-            'role' => $validated['role'],
         ];
 
         // Update password only if provided

@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-    
+
     <!-- HEADER -->
     <div class="flex items-center gap-3 mb-6">
-        <a href="{{ route('users.index') }}" 
+        <a href="{{ route('users.index') }}"
            class="text-gray-600 hover:text-gray-800">
             <i class="fas fa-arrow-left"></i>
         </a>
@@ -23,10 +23,10 @@
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                     Nama Lengkap <span class="text-red-500">*</span>
                 </label>
-                <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
                     value="{{ old('name', $user->name) }}"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('name') border-red-500 @enderror"
                     placeholder="Masukkan nama lengkap"
@@ -42,10 +42,10 @@
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                     Email <span class="text-red-500">*</span>
                 </label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
                     value="{{ old('email', $user->email) }}"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('email') border-red-500 @enderror"
                     placeholder="contoh@email.com"
@@ -61,10 +61,10 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
                     Nomor Telepon
                 </label>
-                <input 
-                    type="text" 
-                    id="phone" 
-                    name="phone" 
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
                     value="{{ old('phone', $user->phone) }}"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('phone') border-red-500 @enderror"
                     placeholder="08xxxxxxxxxx"
@@ -79,9 +79,9 @@
                 <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
                     Alamat
                 </label>
-                <textarea 
-                    id="address" 
-                    name="address" 
+                <textarea
+                    id="address"
+                    name="address"
                     rows="3"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('address') border-red-500 @enderror"
                     placeholder="Masukkan alamat lengkap"
@@ -91,36 +91,15 @@
                 @enderror
             </div>
 
-            <!-- ROLE -->
-            <div class="mb-4">
-                <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                    Role <span class="text-red-500">*</span>
-                </label>
-                <select 
-                    id="role" 
-                    name="role" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('role') border-red-500 @enderror"
-                    required
-                >
-                    <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
-                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                </select>
-                @error('role')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="border-t pt-4 mb-4"></div>
-
             <!-- PASSWORD (OPTIONAL) -->
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                     Password Baru <span class="text-gray-500 text-xs">(Kosongkan jika tidak ingin mengubah)</span>
                 </label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('password') border-red-500 @enderror"
                     placeholder="Minimal 6 karakter"
                 >
@@ -134,10 +113,10 @@
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                     Konfirmasi Password Baru
                 </label>
-                <input 
-                    type="password" 
-                    id="password_confirmation" 
-                    name="password_confirmation" 
+                <input
+                    type="password"
+                    id="password_confirmation"
+                    name="password_confirmation"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Ulangi password baru"
                 >
@@ -145,13 +124,13 @@
 
             <!-- BUTTONS -->
             <div class="flex flex-col sm:flex-row gap-3">
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     class="flex-1 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-medium">
                     <i class="fas fa-save mr-1"></i> Update
                 </button>
-                <a 
-                    href="{{ route('users.index') }}" 
+                <a
+                    href="{{ route('users.index') }}"
                     class="flex-1 bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 text-center font-medium">
                     <i class="fas fa-times mr-1"></i> Batal
                 </a>
@@ -175,19 +154,19 @@
         <p class="font-semibold mb-2 text-gray-700"><i class="fas fa-info-circle mr-1"></i> Info User:</p>
         <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
             <div>
-                <span class="font-medium">Saldo:</span> 
+                <span class="font-medium">Saldo:</span>
                 <span>Rp {{ number_format($user->saldo, 0, ',', '.') }}</span>
             </div>
             <div>
-                <span class="font-medium">Poin:</span> 
+                <span class="font-medium">Poin:</span>
                 <span>{{ $user->total_points }} poin</span>
             </div>
             <div>
-                <span class="font-medium">Terdaftar:</span> 
+                <span class="font-medium">Terdaftar:</span>
                 <span>{{ $user->created_at->format('d M Y') }}</span>
             </div>
             <div>
-                <span class="font-medium">ID:</span> 
+                <span class="font-medium">ID:</span>
                 <span>#{{ $user->id }}</span>
             </div>
         </div>
