@@ -91,27 +91,6 @@
                 @enderror
             </div>
 
-            <!-- ROLE -->
-            <div class="mb-4">
-                <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                    Role <span class="text-red-500">*</span>
-                </label>
-                <select
-                    id="role"
-                    name="role"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent @error('role') border-red-500 @enderror"
-                    required
-                >
-                    <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
-                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                </select>
-                @error('role')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="border-t pt-4 mb-4"></div>
-
             <!-- PASSWORD (OPTIONAL) -->
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -165,7 +144,6 @@
         <ul class="list-disc list-inside space-y-1 text-xs">
             <li>Password hanya akan diubah jika Anda mengisi field password baru</li>
             <li>Mengubah email ke email yang sudah terdaftar akan ditolak</li>
-            <li>Mengubah role dapat mempengaruhi akses user ke sistem</li>
             <li>Saldo dan poin user tidak dapat diubah dari form ini</li>
         </ul>
     </div>
