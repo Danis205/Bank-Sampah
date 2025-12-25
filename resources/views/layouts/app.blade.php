@@ -19,14 +19,14 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        
+
         /* Smooth transitions for mobile menu */
         .mobile-menu {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-in-out;
         }
-        
+
         .mobile-menu.active {
             max-height: 500px;
         }
@@ -154,7 +154,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="mobile-menu lg:hidden bg-green-700">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                
+
                 <!-- User Info -->
                 <div class="px-3 py-2 border-b border-green-600 mb-2">
                     <p class="text-white font-semibold">{{ auth()->user()->name }}</p>
@@ -205,7 +205,12 @@
     </div>
 </nav>
 
-<!-- ALERT -->
+{{-- ============================================ --}}
+{{-- GLOBAL ALERTS - SEMUA ALERT DI TOP --}}
+{{-- Consistency: Success & Error di lokasi sama --}}
+{{-- ============================================ --}}
+
+{{-- SUCCESS ALERT --}}
 @if(session('success'))
 <div class="max-w-7xl mx-auto px-4 mt-4">
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-sm">
@@ -214,6 +219,7 @@
 </div>
 @endif
 
+{{-- ERROR ALERT --}}
 @if(session('error'))
 <div class="max-w-7xl mx-auto px-4 mt-4">
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
@@ -238,11 +244,11 @@
 <script>
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
-    
+
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('active');
-            
+
             // Toggle icon
             const icon = mobileMenuButton.querySelector('i');
             if (mobileMenu.classList.contains('active')) {
